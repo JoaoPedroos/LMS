@@ -1,0 +1,52 @@
+# ==========================================
+# .gitignore para Java, Maven e Spring Boot
+# ==========================================
+
+# Arquivos compilados
+*.class
+
+# Pacotes (Builds)
+*.jar
+*.war
+*.ear
+*.nar
+
+# Adicione isso ao seu arquivo .gitignore
+.env
+
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Logs
+*.log
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.workspace
+
+# Eclipse
+.settings/
+.project
+.classpath
+.metadata/
+
+# VS Code
+.vscode/
+
+# Arquivos temporários de Sistema Operacional
+.DS_Store
+Thumbs.db
+ehthumbs.db
+$RECYCLE.BIN/
