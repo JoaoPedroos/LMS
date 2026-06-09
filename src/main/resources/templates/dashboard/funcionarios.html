@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{dashboard/fragments/shared :: head('Funcionários')}"></head>
+<body>
+<div th:replace="~{dashboard/fragments/shared :: sidebar}"></div>
+<div class="main-content p-4">
+    <h3 class="mb-4">Colaboradores do Escritório</h3>
+
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Cargo</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="func : ${funcionarios}">
+            <td th:text="${func.nome}">Nome</td>
+            <td th:text="${func.email}">E-mail</td>
+            <td><span class="badge bg-dark" th:text="${func.tipoUsuario != null ? func.tipoUsuario.nome : 'N/A'}">Cargo</span></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{dashboard/fragments/shared :: head('Editar Processo - LMS Jurídico')}"></head>
+<body>
+<div th:replace="~{dashboard/fragments/shared :: sidebar}"></div>
+
+<div class="main-content" id="mainContent">
+    <div th:replace="~{dashboard/fragments/shared :: header}"></div>
+
+    <div class="container-fluid p-4">
+        <div class="mb-4">
+            <div class="text-muted small fw-bold text-uppercase mb-1">Operacional <i class="bi bi-chevron-right mx-1"></i> Processos</div>
+            <h4 class="fw-bold text-dark m-0"><i class="bi bi-pencil-square text-teal me-2" style="color: var(--primary-teal);"></i>Editar Processo</h4>
+        </div>
+
+        <div class="content-card p-4 shadow-sm" style="max-width: 800px;">
+            <form th:action="@{/{slug}/processos/salvar(slug=${slugEmpresa})}" method="post">
+                <input type="hidden" name="id" th:value="${processo.id}">
+
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-secondary">Cliente Vinculado</label>
+                    <select name="cliente.id" class="form-select border-secondary-subtle" required>
+                        <option value="">Selecione o Cliente...</option>
+                        <option th:each="cliente : ${clientes}"
+                                th:value="${cliente.id}"
+                                th:text="${cliente.nome}"
+                                th:selected="${processo.cliente != null and processo.cliente.id == cliente.id}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold text-secondary">Formato da Numeração</label>
+                        <select id="formatoProcesso" class="form-select border-secondary-subtle">
+                            <option value="CNJ">Padrão CNJ</option>
+                            <option value="EPROC">e-Proc / Outros</option>
+                        </select>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label small fw-bold text-secondary">Número do Processo</label>
+                        <input type="text" id="numeroProcessoInput" name="numero" class="form-control border-secondary-subtle fw-bold" th:value="${processo.numero}" placeholder="0000000-00.0000.0.00.0000" maxlength="25" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-secondary">Descrição Breve / Objeto</label>
+                    <textarea name="descricao" class="form-control border-secondary-subtle" rows="3" th:text="${processo.descricao}"></textarea>
+                </div>
+
+                <div class="text-end border-top pt-3 mt-2">
+                    <a th:href="@{/{slug}/processos(slug=${slugEmpresa})}" class="btn btn-light border px-4 me-2">Cancelar</a>
+                    <button type="submit" class="btn px-4 text-white" style="background-color: var(--primary-teal); border: none;">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectFormato = document.getElementById('formatoProcesso');
+        const inputNumero = document.getElementById('numeroProcessoInput');
+
+        // Máscara do CNJ enquanto digita
+        inputNumero.addEventListener('input', function(e) {
+            if (selectFormato.value === 'CNJ') {
+                let x = e.target.value.replace(/\D/g, '').match(/(\d{0,7})(\d{0,2})(\d{0,4})(\d{0,1})(\d{0,2})(\d{0,4})/);
+                e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2] + (x[3] ? '.' + x[3] : '') + (x[4] ? '.' + x[4] : '') + (x[5] ? '.' + x[5] : '') + (x[6] ? '.' + x[6] : '');
+            }
+        });
+
+        // Alterna entre travar ou não os limites dependendo se for CNJ ou e-Proc
+        selectFormato.addEventListener('change', function() {
+            if (this.value === 'CNJ') {
+                inputNumero.setAttribute('placeholder', '0000000-00.0000.0.00.0000');
+                inputNumero.setAttribute('maxlength', '25');
+                // Formata o valor atual se o cara mudou de ideia
+                let e = new Event('input');
+                inputNumero.dispatchEvent(e);
+            } else {
+                inputNumero.setAttribute('placeholder', 'Digite o número (Formato Livre)');
+                inputNumero.removeAttribute('maxlength');
+            }
+        });
+    });
+</script>
+
+<div th:replace="~{dashboard/fragments/shared :: scripts}"></div>
+</body>
+</html>

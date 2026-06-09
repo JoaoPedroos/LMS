@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{dashboard/fragments/shared :: head('Demandas - LMS Jurídico')}"></head>
+<body>
+<div th:replace="~{dashboard/fragments/shared :: sidebar}"></div>
+
+<div class="main-content" id="mainContent">
+    <div th:replace="~{dashboard/fragments/shared :: header}"></div>
+
+    <div class="container-fluid p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <div class="text-muted small fw-bold text-uppercase mb-1">Operacional <i class="bi bi-chevron-right mx-1"></i> Demandas</div>
+                <h4 class="fw-bold text-dark m-0"><i class="bi bi-list-check text-teal me-2" style="color: var(--primary-teal);"></i>Gestão de Tarefas</h4>
+            </div>
+            <button class="btn px-4 text-white" style="background-color: var(--primary-teal); border: none;" data-bs-toggle="modal" data-bs-target="#modalNovaDemanda" th:if="${isDiretoria}">
+                <i class="bi bi-plus-lg me-2"></i> Nova Demanda
+            </button>
+        </div>
+
+        <div class="content-card">
+            <div class="p-0 table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-muted small">
+                    <tr>
+                        <th class="ps-4" style="width: 50px;">Status</th>
+                        <th>Título da Tarefa</th>
+                        <th>Responsável</th>
+                        <th>Prazo</th>
+                        <th class="text-end pe-4">Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody class="border-0">
+                    <tr th:each="demanda : ${demandas}" th:id="'linhaDemanda_' + ${demanda.id}">
+                        <td class="ps-4">
+                            <div class="form-check form-switch fs-5">
+                                <input class="form-check-input cursor-pointer toggle-status" type="checkbox" role="switch"
+                                       th:checked="${demanda.concluida}"
+                                       th:data-id="${demanda.id}"
+                                       th:data-slug="${slugEmpresa}">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark titulo-demanda" th:text="${demanda.titulo}" th:style="${demanda.concluida} ? 'text-decoration: line-through; color: #9ca3af !important;' : ''">Título da Demanda</div>
+                            <small class="text-muted d-block text-truncate" style="max-width: 300px;" th:text="${demanda.descricao}">Descrição...</small>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center" th:if="${demanda.atribuidoPara != null}">
+                                <div class="rounded-circle bg-light text-secondary d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px; font-weight: bold; font-size: 11px;" th:text="${#strings.substring(demanda.atribuidoPara.nome,0,1)}">U</div>
+                                <span class="fw-medium text-secondary small" th:text="${demanda.atribuidoPara.nome}">Nome</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-secondary border px-2 py-1" th:if="${demanda.dataFim != null}" th:text="${#temporals.format(demanda.dataFim, 'dd/MM/yyyy HH:mm')}">00/00/0000</span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <form th:action="@{/{slug}/demandas/deletar/{id}(slug=${slugEmpresa}, id=${demanda.id})}" method="post" onsubmit="return confirm('Confirma a exclusão desta demanda?');">
+                                <button type="submit" class="btn btn-sm btn-light border" title="Excluir Demanda">
+                                    <i class="bi bi-trash text-danger"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(demandas)}">
+                        <td colspan="5" class="text-center py-5 text-muted small">Nenhuma tarefa encontrada na sua caixa de entrada.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalNovaDemanda" tabindex="-1" aria-hidden="true" th:if="${isDiretoria}">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 14px;">
+            <div class="modal-header bg-dark text-white p-4">
+                <h5 class="modal-title fw-bold"><i class="bi bi-plus-circle me-2" style="color: var(--primary-teal);"></i> Delegar Tarefa</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/{slug}/demandas/salvar(slug=${slugEmpresa})}" method="post" class="m-0">
+                <div class="modal-body p-4 bg-light">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Título da Demanda</label>
+                        <input type="text" name="titulo" class="form-control border-secondary-subtle" required placeholder="Ex: Protocolar Petição Inicial">
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary">Atribuir Para</label>
+                            <select name="atribuidoPara.id" class="form-select border-secondary-subtle" required>
+                                <option value="">Selecione o membro...</option>
+                                <option th:each="membro : ${equipe}" th:value="${membro.id}" th:text="${membro.nome}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary">Prazo Limite</label>
+                            <input type="datetime-local" name="dataFim" class="form-control border-secondary-subtle">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Instruções</label>
+                        <textarea name="descricao" class="form-control border-secondary-subtle" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer p-3 bg-white border-top-0">
+                    <button type="button" class="btn btn-light border px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn px-4 text-white" style="background-color: var(--primary-teal); border: none;">Criar Tarefa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const switches = document.querySelectorAll('.toggle-status');
+        switches.forEach(btn => {
+            btn.addEventListener('change', function() {
+                const idDemanda = this.getAttribute('data-id');
+                const slug = this.getAttribute('data-slug');
+                const linha = document.getElementById('linhaDemanda_' + idDemanda);
+                const titulo = linha.querySelector('.titulo-demanda');
+                const estaChecado = this.checked;
+                fetch(`/${slug}/demandas/alternar/${idDemanda}`, { method: 'POST' })
+                    .then(response => {
+                        if(response.ok) {
+                            titulo.style.textDecoration = estaChecado ? 'line-through' : 'none';
+                            titulo.style.color = estaChecado ? '#9ca3af' : '#212529';
+                        } else {
+                            this.checked = !estaChecado;
+                            alert('Erro ao atualizar status.');
+                        }
+                    });
+            });
+        });
+    });
+</script>
+
+<style>.cursor-pointer { cursor: pointer; }</style>
+<div th:replace="~{dashboard/fragments/shared :: scripts}"></div>
+</body>
+</html>

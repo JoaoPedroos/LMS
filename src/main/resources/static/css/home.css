@@ -1,0 +1,193 @@
+Percebo perfeitamente o que aconteceu pela imagem que enviou. O que ocorreu aí é que o seu navegador carregou apenas o HTML e o Bootstrap padrão, mas não conseguiu carregar o ficheiro CSS com as cores personalizadas (o azul-petróleo e o dourado). É por isso que tudo ficou branco e com as hiperligações no azul padrão do Bootstrap, e com esse espaço em branco no fundo.
+
+Para garantir que não há problemas de ligação de ficheiros e que o ecrã fica preenchido corretamente, juntei tudo num único ficheiro. Além disso, ajustei a estrutura para que ocupe 100vh (100% da altura do ecrã), preenchendo o espaço em branco com a cor de fundo correta.
+
+                                                                                                                                                                                                                     Pode copiar este código inteiro e substituir o seu ficheiro index.html. Não precisa de um ficheiro CSS à parte.
+
+                                                                                                                                                                                                                     HTML
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LMS - Dashboard | Rezende Advocacia</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+     /* Cores da Identidade Visual */
+ :root {
+     --primary: #003d4c; /* Azul Petróleo Escuro */
+     --accent: #b89b5e;  /* Dourado */
+     --bg-app: #eef2f5;  /* Fundo cinza/azul muito claro para preencher o ecrã */
+ }
+
+/* Configuração de Ecrã Inteiro */
+body, html {
+    height: 100%;
+    margin: 0;
+    overflow: hidden; /* Impede scroll na página toda, apenas no conteúdo */
+    background-color: var(--bg-app);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Estrutura Principal */
+.app-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* --- MENU LATERAL (SIDEBAR) --- */
+.sidebar {
+    width: 260px;
+    background-color: var(--primary);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+    z-index: 10;
+}
+
+.sidebar-header {
+    padding: 30px 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-header h4 {
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: white;
+}
+
+.sidebar-header small {
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 2px;
+}
+
+.nav-menu {
+    padding: 20px 10px;
+    flex-grow: 1;
+}
+
+.menu-link {
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 12px 20px;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.menu-link i {
+    width: 25px;
+    font-size: 1.1rem;
+}
+
+.menu-link:hover, .menu-link.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-left: 4px solid var(--accent);
+}
+
+/* --- ÁREA DE CONTEÚDO --- */
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-app);
+    overflow-y: auto; /* Scroll apenas aqui se houver muito conteúdo */
+}
+
+/* Cabeçalho Superior */
+.top-navbar {
+    background-color: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    z-index: 5;
+}
+
+.search-bar {
+    background-color: #f5f7f9;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 20px;
+    width: 300px;
+}
+
+.search-bar:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent);
+}
+
+/* --- CARDS E WIDGETS --- */
+.content-padding {
+    padding: 30px;
+}
+
+.custom-card {
+    background-color: white;
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    padding: 24px;
+    height: 100%;
+}
+
+.text-primary-custom { color: var(--primary) !important; }
+.text-accent-custom { color: var(--accent) !important; }
+.bg-primary-custom { background-color: var(--primary) !important; }
+.bg-accent-custom { background-color: var(--accent) !important; }
+
+/* Barras de Progresso */
+.progress {
+    height: 8px;
+    border-radius: 10px;
+    background-color: #f0f2f5;
+}
+
+/* Tabela */
+.table th {
+    color: #8898aa;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.table td {
+    vertical-align: middle;
+    color: #525f7f;
+    font-weight: 500;
+}
+
+/* Gráfico Simulado */
+.chart-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    height: 180px;
+    padding-top: 20px;
+    border-bottom: 2px solid #f0f2f5;
+}
+
+.bar {
+    width: 15%;
+    border-radius: 4px 4px 0 0;
+    transition: all 0.3s;
+}
+
+.bar:hover {
+    opacity: 0.8;
+    cursor: pointer;
+}

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planos - Portal Jurídico</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            color: #2c2c2c;
+        }
+        .lms-logo {
+            font-size: 2.5rem;
+            color: #b89b5e;
+            margin-bottom: 10px;
+        }
+        .plan-card {
+            background: #ffffff;
+            border: 1px solid #ced4da;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+        .plan-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            border-color: #3aa6a2;
+        }
+        .plan-card.featured {
+            border: 2px solid #3aa6a2;
+            position: relative;
+        }
+        .plan-card.featured .badge-featured {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #3aa6a2;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+        .plan-header {
+            padding: 35px 30px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            text-align: center;
+        }
+        .plan-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2c2c2c;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .plan-price {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #2c2c2c;
+            margin-top: 15px;
+        }
+        .plan-price span {
+            font-size: 1rem;
+            color: #6c757d;
+            font-weight: 400;
+        }
+        .plan-features {
+            padding: 30px;
+            flex-grow: 1;
+        }
+        .plan-features ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .plan-features li {
+            padding: 12px 0;
+            border-bottom: 1px solid #f8f9fa;
+            font-size: 0.95rem;
+            color: #555;
+            display: flex;
+            align-items: center;
+        }
+        .plan-features li i {
+            color: #3aa6a2;
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+        .plan-footer {
+            padding: 30px;
+            background-color: #ffffff;
+        }
+        .btn-teal-custom {
+            background-color: #3aa6a2;
+            border: none;
+            color: white;
+            padding: 12px;
+            font-weight: bold;
+            width: 100%;
+            border-radius: 30px;
+            transition: background-color 0.3s;
+        }
+        .btn-teal-custom:hover {
+            background-color: #2f8c88;
+            color: white;
+        }
+        .btn-outline-teal {
+            background-color: transparent;
+            border: 2px solid #3aa6a2;
+            color: #3aa6a2;
+            padding: 11px;
+            font-weight: bold;
+            width: 100%;
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+        .btn-outline-teal:hover {
+            background-color: #3aa6a2;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <div class="lms-logo"><i class="bi bi-scales"></i></div>
+        <h6 class="text-muted text-uppercase fw-bold mb-2" style="letter-spacing: 2px;">Passo 2 de 3</h6>
+        <h2 class="fw-bold">Selecione o seu plano de acesso</h2>
+        <p class="text-muted">Gestão jurídica completa, segura e adaptada ao tamanho do seu escritório.</p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4 max-width-container mx-auto" style="max-width: 1100px;">
+
+        <div class="col">
+            <div class="plan-card">
+                <div class="plan-header">
+                    <div class="plan-name">Mensal</div>
+                    <div class="plan-price">R$ 100 <span>/ mês</span></div>
+                    <p class="text-muted small mb-0 mt-2">Flexibilidade total sem fidelidade</p>
+                </div>
+                <div class="plan-features">
+                    <ul>
+                        <li><i class="bi bi-check2-circle"></i> 1 Utilizador Administrador</li>
+                        <li><i class="bi bi-check2-circle"></i> Módulo de Clientes e Agenda</li>
+                        <li><i class="bi bi-check2-circle"></i> Segurança 2FA</li>
+                        <li><i class="bi bi-check2-circle"></i> Suporte via E-mail</li>
+                    </ul>
+                </div>
+                <div class="plan-footer">
+                    <form method="post" action="/planos/escolher">
+                        <input type="hidden" name="idPlano" value="1">
+                        <button type="submit" class="btn btn-outline-teal">Selecionar Plano</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="plan-card featured">
+                <div class="badge-featured">Mais Vendido</div>
+                <div class="plan-header">
+                    <div class="plan-name">Semestral</div>
+                    <div class="plan-price">R$ 490 <span>/ semestre</span></div>
+                    <p class="text-muted small mb-0 mt-2">Economia de R$ 110 sobre o plano mensal</p>
+                </div>
+                <div class="plan-features">
+                    <ul>
+                        <li><i class="bi bi-check2-circle"></i> Até 5 Utilizadores ativos</li>
+                        <li><i class="bi bi-check2-circle"></i> Módulo CRM & Financeiro Inicial</li>
+                        <li><i class="bi bi-check2-circle"></i> Segurança 2FA</li>
+                        <li><i class="bi bi-check2-circle"></i> Gestão de Demandas do Dashboard</li>
+                        <li><i class="bi bi-check2-circle"></i> Suporte Prioritário</li>
+                    </ul>
+                </div>
+                <div class="plan-footer">
+                    <form method="post" action="/planos/escolher">
+                        <input type="hidden" name="idPlano" value="2">
+                        <button type="submit" class="btn btn-teal-custom">Escolher Semestral</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="plan-card">
+                <div class="plan-header">
+                    <div class="plan-name">Anual</div>
+                    <div class="plan-price">R$ 900 <span>/ ano</span></div>
+                    <p class="text-muted small mb-0 mt-2">Melhor custo-benefício (R$ 75/mês)</p>
+                </div>
+                <div class="plan-features">
+                    <ul>
+                        <li><i class="bi bi-check2-circle"></i> Utilizadores Ilimitados</li>
+                        <li><i class="bi bi-check2-circle"></i> Acesso completo a todos os módulos</li>
+                        <li><i class="bi bi-check2-circle"></i> Segurança 2FA</li>
+                        <li><i class="bi bi-check2-circle"></i> Relatórios de Faturamento</li>
+                        <li><i class="bi bi-check2-circle"></i> Gerente de Conta Dedicado</li>
+                    </ul>
+                </div>
+                <div class="plan-footer">
+                    <form method="post" action="/planos/escolher">
+                        <input type="hidden" name="idPlano" value="3">
+                        <button type="submit" class="btn btn-outline-teal">Escolher Anual</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

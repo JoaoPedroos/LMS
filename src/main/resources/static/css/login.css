@@ -1,0 +1,152 @@
+@charset "UTF-8";
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.cont1 {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    width: 100%;
+}
+
+.BG-Image {
+    width: 60%;
+    height: 100vh;
+    background-image: url('/img/fundo-login.png');
+    background-position: center left;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.Login-Form {
+    width: 40%;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.texto-header{
+    margin-bottom: 40px;
+}
+
+.main-div {
+    background: #ffffff;
+    border-radius: 5px;
+    margin: 0 auto;
+    padding: 50px 70px;
+    width: 100%;
+}
+
+.form-control {
+    background: #f7f7f7;
+    border-radius: 7px;
+    font-size: 15px;
+    height: 50px;
+    line-height: 50px;
+    border: 2px solid #d4d4d4;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-group {
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.label{
+    font-size: 15px;
+}
+.subtitulo{
+    margin-bottom: 20px;
+}
+.btn.btn-primary {
+    background: #024d57;
+    border-color: #d4d4d4;
+    font-size: 1.1em;
+    padding: 0;
+    height: 40px;
+    width: 50%;
+    margin: 10px;
+    color: white;
+}
+
+.btn.btn-info {
+    background: #8fecec;
+    border-color: #d4d4d4;
+    font-size: 1.1em;
+    padding: 0;
+    height: 40px;
+    width: 50%;
+}
+
+.ou{
+    color: black;
+    margin-top: 10px;
+}
+
+.butoes{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.cadastrobtn{
+    color: white;
+    width: 10px;
+    border: 1px solid black;
+    height: 10px;
+    padding: 10px;
+    text-decoration: none;
+    background-color: #1a232a;
+    border-radius: 5px;
+}
+.cadastrobtn:hover{
+    color: white;
+}
+
+.cadastro{
+    margin-top: 10px;
+}
+
+.logoadv{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 450px;
+    height: 200px;
+    margin-top: 0px;
+}
+.logoadv1{
+    width: 260px;
+    height: 160px;
+    background-image: url("/img/lms.png");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    border-radius: 10px;
+}
+
+.BG-Video {
+    width: 60%; /* Mantém a sua divisão de tela */
+    height: 100vh;
+    position: relative;
+    overflow: hidden; /* Garante que o vídeo não vaze da metade da tela */
+}
+
+.video-background {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Faz o vídeo preencher todo o espaço sem amassar, igual ao background-size: cover */
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none; /* Evita que o usuário clique e pause o vídeo sem querer */
+}

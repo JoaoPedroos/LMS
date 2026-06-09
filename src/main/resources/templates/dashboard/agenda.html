@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{dashboard/fragments/shared :: head('Agenda Central - LMS Jurídico')}"></div>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <style>
+        .fc-toolbar-title { font-size: 1.25rem !important; font-weight: 700; color: #111827; }
+        .fc-button-primary { background-color: var(--primary-teal) !important; border: none !important; }
+        .fc-button-primary:hover { background-color: #2f8c88 !important; }
+        .fc-day-today { background-color: rgba(58, 166, 162, 0.04) !important; }
+        .fc-event { cursor: pointer; padding: 4px 6px; border-radius: 6px; border: none !important; font-weight: 600; font-size: 0.8rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .toast-alerta { background-color: #111827; color: white; border-left: 5px solid #ef4444; }
+    </style>
+</head>
+<body>
+<div th:replace="~{dashboard/fragments/shared :: sidebar}"></div>
+
+<div class="main-content" id="mainContent">
+    <div th:replace="~{dashboard/fragments/shared :: header}"></div>
+
+    <div class="container-fluid p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <div class="text-muted small fw-bold text-uppercase mb-1">Rotina <i class="bi bi-chevron-right mx-1"></i> Linha do Tempo</div>
+                <h4 class="fw-bold text-dark m-0"><i class="bi bi-calendar3 me-2" style="color: var(--primary-teal);"></i>Calendário Integrado Operacional</h4>
+            </div>
+            <button class="btn btn-teal px-4" data-bs-toggle="modal" data-bs-target="#modalNovoEvento">
+                <i class="bi bi-plus-lg me-2"></i> Adicionar Agendamento
+            </button>
+        </div>
+
+        <div class="content-card p-4 bg-white">
+            <div id='calendar'></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalNovoEvento" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+            <div class="modal-header bg-dark text-white p-3">
+                <h5 class="modal-title fw-bold"><i class="bi bi-calendar-plus me-2" style="color: var(--primary-teal);"></i> Criar Novo Compromisso</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form th:action="@{/{slug}/agenda/salvar(slug=${slugEmpresa})}" method="post" class="m-0">
+                <div class="modal-body p-4 bg-light">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Título / Objeto</label>
+                        <input type="text" class="form-control" name="titulo" placeholder="Ex: Reunião com Cliente ou Audiência..." required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Data e Horário</label>
+                        <input type="datetime-local" class="form-control" name="dataHora" required>
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label small fw-bold">Notas de Observação</label>
+                        <textarea class="form-control" name="descricao" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer p-3 bg-white">
+                    <button type="submit" class="btn btn-teal w-100">Confirmar Agendamento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000;">
+    <div id="prazoToast" class="toast toast-alerta" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="bi bi-alarm-fill text-danger me-2"></i>
+                <strong>Atenção:</strong> Há demandas críticas com prazo terminando hoje!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{dashboard/fragments/shared :: scripts}"></div>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var slug = /*[[${slugEmpresa}]]*/ 'default';
+        var hojeStr = new Date().toISOString().split('T')[0];
+        var flagAlerta = false;
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'pt-br',
+            editable: true,
+            dayMaxEvents: true, // EXPANDE O DIA QUANDO TIVER MUITAS MARCAÇÕES
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,listWeek'
+            },
+            events: [
+                /*[# th:each="ev : ${eventos}"]*/
+                {
+                    id: 'E_' + /*[[${ev.id}]]*/ '0',
+                    title: '💼 ' + /*[[${ev.titulo}]]*/ 'Compromisso',
+                    start: /*[[${ev.dataHora}]]*/ '',
+                    backgroundColor: '#3aa6a2',
+                    textColor: '#fff'
+                },
+                /*[/]*/
+
+                /*[# th:each="fin : ${contasPrazo}"]*/
+                {
+                    id: 'F_' + /*[[${fin.id}]]*/ '0',
+                    title: '💵 ' + /*[[${fin.descricao}]]*/ 'Boleto',
+                    start: /*[[${fin.dataVencimento}]]*/ '',
+                    backgroundColor: '#d97706',
+                    allDay: true,
+                    textColor: '#fff'
+                },
+                /*[/]*/
+
+                /*[# th:each="dem : ${demandas}"]*/
+                {
+                    id: 'D_' + /*[[${dem.id}]]*/ '0',
+                    title: '📌 ' + /*[[${dem.descricao}]]*/ 'Demanda',
+                    start: /*[[${dem.dataInicio != null ? dem.dataInicio : dem.empresa.dataCriacao}]]*/ '',
+                    end: /*[[${dem.dataFim}]]*/ '',
+                    backgroundColor: '#1f2937',
+                    textColor: '#fff'
+                },
+                /*[/]*/
+            ],
+            eventDrop: function(info) {
+                var formData = new URLSearchParams();
+                formData.append("id", info.event.id);
+                formData.append("novaData", info.event.start.toISOString());
+
+                fetch('/' + slug + '/agenda/atualizar-data', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                })
+                    .then(res => res.text())
+                    .catch(() => {
+                        alert("Erro ao atualizar data.");
+                        info.revert();
+                    });
+            }
+        });
+
+        calendar.render();
+
+        // Dispara o Toast se encontrar tarefas terminando hoje
+        /*[# th:each="dem : ${demandas}"]*/
+        var dataFimDemanda = /*[[${dem.dataFim}]]*/ '';
+        if(dataFimDemanda && dataFimDemanda.includes(hojeStr)) {
+            flagAlerta = true;
+        }
+        /*[/]*/
+
+        if(flagAlerta) {
+            var toast = new bootstrap.Toast(document.getElementById('prazoToast'), { delay: 8000 });
+            toast.show();
+        }
+    });
+</script>
+</body>
+</html>

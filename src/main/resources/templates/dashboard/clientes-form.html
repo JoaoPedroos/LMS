@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{dashboard/fragments/shared :: head('Editar Cliente - LMS Jurídico')}"></head>
+<body>
+<div th:replace="~{dashboard/fragments/shared :: sidebar}"></div>
+
+<div class="main-content" id="mainContent">
+    <div th:replace="~{dashboard/fragments/shared :: header}"></div>
+
+    <div class="container-fluid p-4">
+        <div class="mb-4">
+            <div class="text-muted small fw-bold text-uppercase mb-1">Operacional <i class="bi bi-chevron-right mx-1"></i> Clientes</div>
+            <h4 class="fw-bold text-dark m-0"><i class="bi bi-pencil-square text-teal me-2" style="color: var(--primary-teal);"></i>Editar Ficha do Cliente</h4>
+        </div>
+
+        <div class="content-card p-4 shadow-sm" style="max-width: 800px;">
+            <form th:action="@{/{slug}/clientes/salvar(slug=${slugEmpresa})}" method="post">
+                <input type="hidden" name="id" th:value="${cliente.id}">
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-8">
+                        <label class="form-label small fw-bold text-secondary">Nome Completo / Razão Social</label>
+                        <input type="text" class="form-control border-secondary-subtle" name="nome" th:value="${cliente.nome}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold text-secondary">CPF ou CNPJ</label>
+                        <input type="text" class="form-control border-secondary-subtle mascara-cpf" name="cpf" th:value="${cliente.cpf}" required maxlength="18">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-secondary">E-mail de Contato</label>
+                        <input type="email" class="form-control border-secondary-subtle" name="email" th:value="${cliente.email}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-bold text-secondary">Telefone / WhatsApp</label>
+                        <input type="text" class="form-control border-secondary-subtle mascara-tel" name="telefone" th:value="${cliente.telefone}" maxlength="15">
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label small fw-bold text-secondary">Endereço Residencial/Comercial</label>
+                        <input type="text" class="form-control border-secondary-subtle" name="endereco" th:value="${cliente.endereco}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold text-secondary">Status da Conta</label>
+                        <select name="ativo" class="form-select border-secondary-subtle">
+                            <option value="true" th:selected="${cliente.ativo}">Ativo no Sistema</option>
+                            <option value="false" th:selected="${!cliente.ativo}">Cliente Inativo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="text-end border-top pt-3 mt-4">
+                    <a th:href="@{/{slug}/clientes(slug=${slugEmpresa})}" class="btn btn-light border px-4 me-2">Cancelar</a>
+                    <button type="submit" class="btn px-4 text-white" style="background-color: var(--primary-teal); border: none;">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.mascara-cpf').forEach(input => {
+            input.addEventListener('input', function(e) {
+                let v = e.target.value.replace(/\D/g, "");
+                if (v.length <= 11) {
+                    v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                    v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                    v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+                } else {
+                    v = v.replace(/^(\d{2})(\d)/, "$1.$2");
+                    v = v.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+                    v = v.replace(/\.(\d{3})(\d)/, ".$1/$2");
+                    v = v.replace(/(\d{4})(\d)/, "$1-$2");
+                }
+                e.target.value = v;
+            });
+        });
+
+        document.querySelectorAll('.mascara-tel').forEach(input => {
+            input.addEventListener('input', function(e) {
+                let v = e.target.value.replace(/\D/g, "");
+                v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
+                v = v.replace(/(\d)(\d{4})$/, "$1-$2");
+                e.target.value = v;
+            });
+        });
+    });
+</script>
+
+<div th:replace="~{dashboard/fragments/shared :: scripts}"></div>
+</body>
+</html>

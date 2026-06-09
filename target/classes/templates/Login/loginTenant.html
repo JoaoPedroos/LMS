@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Portal Jurídico</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-teal: #3aa6a2;
+            --dark-bg: #111827;
+            --light-gray: #f4f6f9;
+        }
+        body {
+            background-color: var(--light-gray);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+        }
+        .navbar-top {
+            background-color: #ffffff;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .brand-logo {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--dark-bg);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        .brand-logo i {
+            color: var(--primary-teal);
+            margin-right: 10px;
+        }
+        .main-container {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            border-top: 5px solid var(--primary-teal);
+        }
+        .logo-circle {
+            width: 70px;
+            height: 70px;
+            background-color: rgba(58, 166, 162, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 1.8rem;
+            color: var(--primary-teal);
+        }
+        .enterprise-badge {
+            background-color: #f3f4f6;
+            color: var(--dark-bg);
+            padding: 6px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+            border: 1px solid #e5e7eb;
+        }
+        .form-control {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 14px 16px;
+            border-radius: 10px;
+        }
+        .form-control:focus {
+            border-color: var(--primary-teal);
+            box-shadow: 0 0 0 4px rgba(58, 166, 162, 0.15);
+            background-color: #ffffff;
+        }
+        .btn-submit {
+            background-color: var(--dark-bg);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        .btn-submit:hover {
+            background-color: var(--primary-teal);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <div class="login-card text-center">
+        <div class="logo-circle"><i class="bi bi-building"></i></div>
+        <div class="enterprise-badge" th:text="${#strings.toUpperCase(slugEmpresa)}">ESCRITÓRIO</div>
+
+        <h4 class="fw-bold mb-1" style="color: var(--dark-bg);">Acesso ao Portal</h4>
+        <p class="text-muted small mb-4">Insira os dados cadastrados da sua conta corporativa.</p>
+
+        <div class="alert alert-danger text-start py-2 small fw-bold mb-4" role="alert" th:if="${msg}">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${msg}"></span>
+        </div>
+
+        <form method="post" th:action="@{/{slug}/login(slug=${slugEmpresa})}" th:object="${usuario}" class="text-start">
+            <div class="mb-3">
+                <label class="form-label small text-muted fw-bold">E-mail</label>
+                <input type="email" th:field="*{email}" class="form-control" placeholder="nome@empresa.com" required autocomplete="email">
+            </div>
+
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label class="form-label small text-muted fw-bold mb-0">Senha</label>
+                    <a href="#" class="text-decoration-none small text-muted">Esqueceu a senha?</a>
+                </div>
+                <input type="password" th:field="*{senha}" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn btn-submit">Entrar no Painel</button>
+        </form>
+
+        <div class="mt-4 border-top pt-3">
+            <a href="/login" class="text-decoration-none small text-muted"><i class="bi bi-arrow-left me-1"></i> Localizar outro escritório</a>
+        </div>
+    </div>
+</div>
+
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;">
+    <div id="alertaToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" th:if="${erro != null}">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span th:text="${erro}">Erro interno.</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:if="${erro != null}">
+    document.addEventListener("DOMContentLoaded", function() {
+        var myToast = new bootstrap.Toast(document.getElementById('alertaToast'), { delay: 4000 });
+        myToast.show();
+    });
+</script>
+</body>
+</html>

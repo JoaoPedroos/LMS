@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{dashboard/fragments/shared :: head('Processos - LMS Jurídico')}"></head>
+<body>
+<div th:replace="~{dashboard/fragments/shared :: sidebar}"></div>
+
+<div class="main-content" id="mainContent">
+    <div th:replace="~{dashboard/fragments/shared :: header}"></div>
+
+    <div class="container-fluid p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <div class="text-muted small fw-bold text-uppercase mb-1">Operacional <i class="bi bi-chevron-right mx-1"></i> Processos</div>
+                <h4 class="fw-bold text-dark m-0"><i class="bi bi-folder text-teal me-2" style="color: var(--primary-teal);"></i>Gestão de Processos</h4>
+            </div>
+            <button class="btn px-4 text-white" style="background-color: var(--primary-teal); border: none;" data-bs-toggle="modal" data-bs-target="#modalNovoProcesso" th:if="${session.usuarioLogado.tipoUsuario.nome == 'ADMIN' or #lists.contains(session.usuarioLogado.permissoes.![nome], 'GERENCIAR_PROCESSOS')}">
+                <i class="bi bi-plus-lg me-2"></i> Novo Processo
+            </button>
+        </div>
+
+        <div class="content-card">
+            <div class="p-3 border-bottom bg-white">
+                <div class="row g-2">
+                    <div class="col-md-5 position-relative">
+                        <i class="bi bi-search text-muted position-absolute top-50 translate-middle-y ms-3"></i>
+                        <input type="text" id="buscaProcesso" class="form-control ps-5 bg-light border-0" style="padding: 10px;" placeholder="Pesquisar por número, cliente ou status...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-0 table-responsive">
+                <table class="table table-hover align-middle mb-0" id="tabelaProcessos">
+                    <thead class="table-light text-muted small">
+                    <tr>
+                        <th class="ps-4">Número do Processo</th>
+                        <th>Cliente Vinculado</th>
+                        <th>Data de Cadastro</th>
+                        <th class="pe-4 text-end">Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody class="border-0">
+                    <tr th:each="processo : ${processos}">
+                        <td class="ps-4">
+                            <div class="fw-bold text-dark" style="letter-spacing: 0.5px;" th:text="${processo.numero}">0000000-00.0000.0.00.0000</div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center" th:if="${processo.cliente != null}">
+                                <div class="rounded-circle bg-light text-secondary d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px; font-weight: bold; font-size: 12px;" th:text="${#strings.substring(processo.cliente.nome,0,1)}">C</div>
+                                <span class="fw-medium text-secondary" th:text="${processo.cliente.nome}">Nome do Cliente</span>
+                            </div>
+                            <span class="text-muted small italic" th:if="${processo.cliente == null}">Sem cliente</span>
+                        </td>
+                        <td class="text-muted small">Registrado no sistema</td>
+
+                        <td class="pe-4 text-end">
+                            <a th:href="@{/{slug}/processos/editar/{id}(slug=${slugEmpresa}, id=${processo.id})}" class="btn btn-sm btn-light border" title="Editar Processo">
+                                <i class="bi bi-pencil-square text-secondary"></i>
+                            </a>
+
+                            <a th:href="@{/{slug}/processos/deletar/{id}(slug=${slugEmpresa}, id=${processo.id})}"
+                               class="btn btn-sm btn-light border"
+                               title="Excluir Processo"
+                               th:if="${session.usuarioLogado.tipoUsuario.nome == 'ADMIN' or #lists.contains(session.usuarioLogado.permissoes.![nome], 'GERENCIAR_PROCESSOS')}"
+                               onclick="return confirm('Tem certeza que deseja excluir em definitivo este processo do sistema?');">
+                                <i class="bi bi-trash text-danger"></i>
+                            </a>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(processos)}">
+                        <td colspan="4" class="text-center py-5 text-muted small">Nenhum processo cadastrado neste escritório ainda.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalNovoProcesso" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 14px;">
+            <div class="modal-header bg-dark text-white p-4">
+                <h5 class="modal-title fw-bold"><i class="bi bi-folder-plus me-2" style="color: var(--primary-teal);"></i> Cadastrar Novo Processo</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/{slug}/processos/salvar(slug=${slugEmpresa})}" method="post" class="m-0">
+                <div class="modal-body p-4 bg-light">
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Cliente Vinculado</label>
+                        <select name="cliente.id" class="form-select border-secondary-subtle" required>
+                            <option value="">Selecione o Cliente...</option>
+                            <option th:each="cliente : ${clientes}" th:value="${cliente.id}" th:text="${cliente.nome}"></option>
+                        </select>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-secondary">Formato</label>
+                            <select id="formatoProcesso" class="form-select border-secondary-subtle">
+                                <option value="CNJ">Padrão CNJ</option>
+                                <option value="EPROC">e-Proc / Outros</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label small fw-bold text-secondary">Número do Processo</label>
+                            <input type="text" id="numeroProcessoInput" name="numero" class="form-control border-secondary-subtle fw-bold" placeholder="0000000-00.0000.0.00.0000" maxlength="25" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Descrição Breve / Objeto (Opcional)</label>
+                        <textarea name="descricao" class="form-control border-secondary-subtle" rows="2" placeholder="Ex: Ação Indenizatória contra Empresa X"></textarea>
+                    </div>
+
+                </div>
+                <div class="modal-footer p-3 bg-white border-top-0">
+                    <button type="button" class="btn btn-light border px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn px-4 text-white" style="background-color: var(--primary-teal); border: none;">Salvar Processo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // 1. FILTRO DE BUSCA NA TABELA (Em tempo real)
+        const inputBusca = document.getElementById('buscaProcesso');
+        const tabelaRows = document.querySelectorAll('#tabelaProcessos tbody tr');
+
+        if(inputBusca) {
+            inputBusca.addEventListener('keyup', function() {
+                const termo = this.value.toLowerCase();
+                tabelaRows.forEach(row => {
+                    // Ignora a linha de "Nenhum processo cadastrado" se existir
+                    if(row.cells.length > 1) {
+                        const textoLinha = row.textContent.toLowerCase();
+                        row.style.display = textoLinha.includes(termo) ? '' : 'none';
+                    }
+                });
+            });
+        }
+
+        // 2. MÁSCARA INTELIGENTE DO NÚMERO DE PROCESSO
+        const selectFormato = document.getElementById('formatoProcesso');
+        const inputNumero = document.getElementById('numeroProcessoInput');
+
+        // Aplica a máscara enquanto o usuário digita
+        inputNumero.addEventListener('input', function(e) {
+            if (selectFormato.value === 'CNJ') {
+                let x = e.target.value.replace(/\D/g, '').match(/(\d{0,7})(\d{0,2})(\d{0,4})(\d{0,1})(\d{0,2})(\d{0,4})/);
+                e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2] + (x[3] ? '.' + x[3] : '') + (x[4] ? '.' + x[4] : '') + (x[5] ? '.' + x[5] : '') + (x[6] ? '.' + x[6] : '');
+            }
+        });
+
+        // Alterna entre CNJ e e-Proc limpando o campo e mudando o limite
+        selectFormato.addEventListener('change', function() {
+            inputNumero.value = '';
+            if (this.value === 'CNJ') {
+                inputNumero.setAttribute('placeholder', '0000000-00.0000.0.00.0000');
+                inputNumero.setAttribute('maxlength', '25');
+            } else {
+                inputNumero.setAttribute('placeholder', 'Digite o número (Formato Livre)');
+                inputNumero.removeAttribute('maxlength');
+            }
+        });
+    });
+</script>
+
+<div th:replace="~{dashboard/fragments/shared :: scripts}"></div>
+</body>
+</html>

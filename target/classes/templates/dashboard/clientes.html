@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{dashboard/fragments/shared :: head('Clientes - LMS Jurídico')}"></head>
+<body>
+<div th:replace="~{dashboard/fragments/shared :: sidebar}"></div>
+
+<div class="main-content" id="mainContent">
+    <div th:replace="~{dashboard/fragments/shared :: header}"></div>
+
+    <div class="container-fluid p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <div class="text-muted small fw-bold text-uppercase mb-1">Operacional <i class="bi bi-chevron-right mx-1"></i> Clientes</div>
+                <h4 class="fw-bold text-dark m-0"><i class="bi bi-people me-2" style="color: var(--primary-teal);"></i>Gestão Base de Clientes</h4>
+            </div>
+            <button class="btn px-4 text-white" style="background-color: var(--primary-teal); border: none;" data-bs-toggle="modal" data-bs-target="#modalNovoCliente" th:if="${podeGerenciar}">
+                <i class="bi bi-plus-lg me-2"></i> Novo Cliente
+            </button>
+        </div>
+
+        <div class="content-card">
+            <div class="p-3 border-bottom bg-white">
+                <div class="row g-2">
+                    <div class="col-md-5 position-relative">
+                        <i class="bi bi-search text-muted position-absolute top-50 translate-middle-y ms-3"></i>
+                        <input type="text" id="buscaCliente" class="form-control ps-5 bg-light border-0" style="padding: 10px;" placeholder="Filtrar por nome, CPF ou contato...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-0 table-responsive">
+                <table class="table table-hover align-middle mb-0" id="tabelaClientes">
+                    <thead class="table-light text-muted small">
+                    <tr>
+                        <th class="ps-4">Nome do Cliente</th>
+                        <th>CPF / CNPJ</th>
+                        <th>Informações de Contato</th>
+                        <th>Processos Vinculados</th>
+                        <th>Status</th>
+                        <th class="pe-4 text-end" th:if="${podeGerenciar}">Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody class="border-0">
+                    <tr th:each="cliente : ${clientes}">
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-light text-secondary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; font-weight: bold;" th:text="${#strings.substring(cliente.nome,0,1)}">C</div>
+                                <div>
+                                    <div class="fw-bold text-dark" th:text="${cliente.nome}">Nome do Cliente</div>
+                                    <small class="text-muted" th:text="${cliente.endereco}">Endereço</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="fw-medium text-secondary" th:text="${cliente.cpf}">000.000.000-00</td>
+                        <td>
+                            <div class="text-dark small"><i class="bi bi-envelope me-1 text-muted"></i> <span th:text="${cliente.email}">email@provedor.com</span></div>
+                            <div class="text-muted small mt-1"><i class="bi bi-whatsapp me-1 text-muted"></i> <span th:text="${cliente.telefone}">(00) 00000-0000</span></div>
+                        </td>
+                        <td>
+                            <div th:each="proc : ${cliente.processos}" class="mb-1">
+                                <span class="badge bg-light text-primary border px-2 py-1 fw-bold d-inline-block" style="letter-spacing: 0.5px;" th:text="${proc.numero}">0000000-00.0000.0.00.0000</span>
+                            </div>
+                            <span class="text-muted small" style="font-style: italic;" th:if="${#lists.isEmpty(cliente.processos)}">Nenhum processo</span>
+                        </td>
+                        <td>
+                            <span th:if="${cliente.ativo}" class="badge bg-success bg-opacity-10 text-success px-3 rounded-pill">Ativo</span>
+                            <span th:if="${!cliente.ativo}" class="badge bg-danger bg-opacity-10 text-danger px-3 rounded-pill">Inativo</span>
+                        </td>
+                        <td class="pe-4 text-end" th:if="${podeGerenciar}">
+                            <a th:href="@{/{slug}/clientes/editar/{id}(slug=${slugEmpresa}, id=${cliente.id})}" class="btn btn-sm btn-light border" title="Editar Cliente">
+                                <i class="bi bi-pencil-square text-secondary"></i>
+                            </a>
+                            <a th:href="@{/{slug}/clientes/deletar/{id}(slug=${slugEmpresa}, id=${cliente.id})}"
+                               class="btn btn-sm btn-light border ms-1"
+                               title="Excluir Cliente"
+                               onclick="return confirm('ATENÇÃO: Deseja realmente excluir este cliente do sistema?');">
+                                <i class="bi bi-trash text-danger"></i>
+                            </a>
+                        </td>
+                    </tr>
+
+                    <tr th:if="${#lists.isEmpty(clientes)}">
+                        <td colspan="6" class="text-center py-5 text-muted small">Nenhum cliente cadastrado neste escritório ainda.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalNovoCliente" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 14px;">
+            <div class="modal-header bg-dark text-white p-4">
+                <h5 class="modal-title fw-bold"><i class="bi bi-person-plus me-2" style="color: var(--primary-teal); export: no;"></i> Cadastrar Novo Cliente</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/{slug}/clientes/salvar(slug=${slugEmpresa})}" method="post" class="m-0">
+                <div class="modal-body p-4 bg-light">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label small fw-bold text-secondary">Nome Completo / Razão Social</label>
+                            <input type="text" class="form-control border-secondary-subtle" name="nome" placeholder="Insira o nome completo" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-secondary">CPF ou CNPJ</label>
+                            <input type="text" class="form-control border-secondary-subtle mascara-cpf" name="cpf" placeholder="000.000.000-00" required maxlength="18">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary">E-mail de Contato</label>
+                            <input type="email" class="form-control border-secondary-subtle" name="email" placeholder="exemplo@provedor.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-secondary">Telefone / WhatsApp</label>
+                            <input type="text" class="form-control border-secondary-subtle mascara-tel" name="telefone" placeholder="(00) 90000-0000" maxlength="15">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-secondary">Endereço Residencial/Comercial</label>
+                            <input type="text" class="form-control border-secondary-subtle" name="endereco" placeholder="Rua, Número, Bairro, Cidade - UF">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer p-3 bg-white border-top-0">
+                    <button type="button" class="btn btn-light border px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn px-4 text-white" style="background-color: var(--primary-teal); border: none;">Salvar Cadastro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputBusca = document.getElementById('buscaCliente');
+        const tabelaRows = document.querySelectorAll('#tabelaClientes tbody tr');
+
+        if(inputBusca) {
+            inputBusca.addEventListener('keyup', function() {
+                const termo = this.value.toLowerCase();
+                tabelaRows.forEach(row => {
+                    if(row.cells.length > 1) {
+                        const textoLinha = row.textContent.toLowerCase();
+                        row.style.display = textoLinha.includes(termo) ? '' : 'none';
+                    }
+                });
+            });
+        }
+
+        document.querySelectorAll('.mascara-cpf').forEach(input => {
+            input.addEventListener('input', function(e) {
+                let v = e.target.value.replace(/\D/g, "");
+                if (v.length <= 11) {
+                    v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                    v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                    v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+                } else {
+                    v = v.replace(/^(\d{2})(\d)/, "$1.$2");
+                    v = v.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+                    v = v.replace(/\.(\d{3})(\d)/, ".$1/$2");
+                    v = v.replace(/(\d{4})(\d)/, "$1-$2");
+                }
+                e.target.value = v;
+            });
+        });
+
+        document.querySelectorAll('.mascara-tel').forEach(input => {
+            input.addEventListener('input', function(e) {
+                let v = e.target.value.replace(/\D/g, "");
+                v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
+                v = v.replace(/(\d)(\d{4})$/, "$1-$2");
+                e.target.value = v;
+            });
+        });
+    });
+</script>
+
+<div th:replace="~{dashboard/fragments/shared :: scripts}"></div>
+</body>
+</html>

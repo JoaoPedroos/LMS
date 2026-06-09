@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{dashboard/fragments/shared :: head('Verificação de Segurança - LMS Jurídico')}"></head>
+<body class="bg-light">
+
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card border-0 shadow-lg" style="max-width: 450px; border-radius: 16px;">
+        <div class="card-body p-5 text-center">
+
+            <div class="mb-4">
+                <i class="bi bi-shield-lock text-teal" style="font-size: 3rem; color: var(--primary-teal);"></i>
+            </div>
+
+            <h4 class="fw-bold text-dark mb-3">Verificação em Duas Etapas</h4>
+            <p class="text-muted small mb-4">Para proteger os dados do escritório, enviamos um código de verificação de 6 dígitos para o seu e-mail.</p>
+
+            <form th:action="@{/{slug}/verificar-2fa(slug=${slugEmpresa})}" method="post">
+                <div class="mb-4">
+                    <input type="text" name="codigo" class="form-control form-control-lg text-center fw-bold"
+                           placeholder="000000" maxlength="6" autocomplete="off" required
+                           style="letter-spacing: 8px; font-size: 1.5rem;">
+                </div>
+
+                <button type="submit" class="btn btn-lg w-100 text-white fw-bold shadow-sm" style="background-color: var(--primary-teal); border: none;">
+                    Validar Acesso
+                </button>
+
+                <div th:if="${param.erro}" class="alert alert-danger mt-3 small border-0 py-2">
+                    <i class="bi bi-exclamation-circle me-1"></i> Código inválido. Tente novamente.
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{dashboard/fragments/shared :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{dashboard/fragments/shared :: head('Dashboard - LMS Jurídico')}"></head>
+<body>
+
+<div th:replace="~{dashboard/fragments/shared :: sidebar}"></div>
+
+<div class="main-content" id="mainContent">
+    <div th:replace="~{dashboard/fragments/shared :: header}"></div>
+
+    <div class="container-fluid p-4">
+        <div class="mb-4">
+            <div class="text-muted small fw-bold text-uppercase mb-1">Dashboard <i class="bi bi-chevron-right mx-1"></i> Index</div>
+            <h3 class="fw-bold" style="color: #111827;">Bem-vindo ao Portal</h3>
+        </div>
+
+        <div class="row g-4 mb-4">
+
+            <div class="col-md-3" th:if="${session.usuarioLogado.tipoUsuario.nome == 'ADMIN' or #lists.contains(session.usuarioLogado.permissoes.![nome], 'VISUALIZAR_PROCESSOS')}">
+                <div class="content-card h-100 p-4 d-flex align-items-center">
+                    <div class="rounded-3 d-flex align-items-center justify-content-center me-3 bg-dark text-white" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                        <i class="bi bi-folder"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-bold mb-1">Processos Ativos:</div>
+                        <h2 class="fw-bold mb-0 text-dark" th:text="${totalProcessos}">0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3" th:if="${session.usuarioLogado.tipoUsuario.nome == 'ADMIN' or #lists.contains(session.usuarioLogado.permissoes.![nome], 'VISUALIZAR_CLIENTES') or #lists.contains(session.usuarioLogado.permissoes.![nome], 'GERENCIAR_CLIENTES')}">
+                <div class="content-card h-100 p-4 d-flex align-items-center">
+                    <div class="rounded-3 d-flex align-items-center justify-content-center me-3 text-white" style="width: 60px; height: 60px; background-color: var(--primary-teal); font-size: 1.5rem;">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-bold mb-1">Total de Clientes:</div>
+                        <h2 class="fw-bold mb-0 text-dark" th:text="${totalClientes}">0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3" th:if="${podeVerFinanceiro}">
+                <div class="content-card h-100 p-3 d-flex align-items-center" style="border-left: 4px solid #10b981; background-color: #f0fdf4;">
+                    <div class="rounded-3 d-flex align-items-center justify-content-center me-3 text-white" style="width: 50px; height: 50px; background-color: #10b981; font-size: 1.2rem;">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-bold mb-1">Recebido (Mês):</div>
+                        <h4 class="fw-bold mb-0" style="color: #065f46;" th:text="|R$ ${#numbers.formatDecimal(totalRecebidoMes, 1, 'POINT', 2, 'COMMA')}|">R$ 0,00</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3" th:if="${podeVerFinanceiro}">
+                <div class="content-card h-100 p-3 d-flex align-items-center" style="border-left: 4px solid #ef4444; background-color: #fef2f2;">
+                    <div class="rounded-3 d-flex align-items-center justify-content-center me-3 text-white" style="width: 50px; height: 50px; background-color: #ef4444; font-size: 1.2rem;">
+                        <i class="bi bi-graph-down-arrow"></i>
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-bold mb-1">Gasto (Mês):</div>
+                        <h4 class="fw-bold mb-0" style="color: #991b1b;" th:text="|R$ ${#numbers.formatDecimal(totalGastoMes, 1, 'POINT', 2, 'COMMA')}|">R$ 0,00</h4>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-lg-6" th:if="${session.usuarioLogado.tipoUsuario.nome == 'ADMIN' or #lists.contains(session.usuarioLogado.permissoes.![nome], 'VISUALIZAR_AGENDA')}">
+                <div class="content-card h-100">
+                    <div class="content-card-header bg-white">
+                        <i class="bi bi-calendar-event me-2" style="color: var(--primary-teal);"></i> Próximos Compromissos
+                    </div>
+                    <div class="p-0 table-responsive">
+                        <table class="table table-hover align-middle mb-0 border-0">
+                            <thead class="table-light text-muted small">
+                            <tr>
+                                <th class="ps-4 border-0">Título / Assunto</th>
+                                <th class="border-0">Data e Hora</th>
+                                <th class="pe-4 border-0 text-end">Responsável</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="evento : ${eventos}">
+                                <td class="ps-4 fw-medium text-dark" th:text="${evento.titulo}">Assunto</td>
+                                <td class="text-muted small">
+                                    <i class="bi bi-clock me-1 text-primary"></i>
+                                    <span th:text="${#temporals.format(evento.dataHora, 'dd/MM/yyyy HH:mm')}">Data</span>
+                                </td>
+                                <td class="pe-4 text-end">
+                                    <span class="badge rounded-pill bg-light text-dark border" th:text="${evento.responsavel != null ? evento.responsavel.nome : 'Sem Atribuição'}">Dr.</span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(eventos)}">
+                                <td colspan="3" class="text-center py-5 text-muted small">Nenhum compromisso agendado.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="content-card h-100">
+                    <div class="content-card-header bg-white d-flex justify-content-between align-items-center">
+                        <div><i class="bi bi-check2-square me-2" style="color: var(--dark-bg);"></i> Minhas Demandas Ativas</div>
+                        <span class="badge bg-dark rounded-pill" th:text="${demandasPendentesCount} + ' pendentes'"></span>
+                    </div>
+                    <div class="content-card-body pt-3">
+                        <div th:each="demanda : ${minhasDemandas}" class="d-flex align-items-center mb-3">
+                            <input type="checkbox" class="form-check-input me-3 check-demanda"
+                                   th:checked="${demanda.concluida}"
+                                   th:attr="data-id=${demanda.id}"
+                                   style="width: 20px; height: 20px; border-color: var(--primary-teal); cursor: pointer;">
+                            <span class="fw-medium text-target"
+                                  th:text="${demanda.descricao}"
+                                  th:style="${demanda.concluida} ? 'text-decoration: line-through; color: #9ca3af;' : 'color: #1f2937;'">
+                                    Tarefa
+                                </span>
+                        </div>
+                        <p th:if="${#lists.isEmpty(minhasDemandas)}" class="text-muted small">Nenhuma tarefa pendente associada.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    document.querySelectorAll('.check-demanda').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const id = this.getAttribute('data-id');
+            const slug = /*[[${slugEmpresa}]]*/ 'default';
+            const labelText = this.nextElementSibling;
+
+            fetch(`/${slug}/demandas/alternar/${id}`, { method: 'POST' })
+                .then(res => res.json())
+                .then(isConcluida => {
+                    labelText.style.textDecoration = isConcluida ? 'line-through' : 'none';
+                    labelText.style.color = isConcluida ? '#9ca3af' : '#1f2937';
+                }).catch(() => alert('Erro ao atualizar no servidor.'));
+        });
+    });
+</script>
+
+<div th:replace="~{dashboard/fragments/shared :: scripts}"></div>
+</body>
+</html>

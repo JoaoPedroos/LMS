@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configurar Escritório</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { background-color: #ffffff; height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+    .onboarding-card { width: 100%; max-width: 500px; padding: 50px 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.08); border-radius: 12px; border: 1px solid #ced4da; text-align: center; }
+    .lms-logo { font-size: 3rem; color: #b89b5e; margin-bottom: 15px; }
+    .step-badge { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: #6c757d; font-weight: bold; margin-bottom: 10px; display: block; }
+    .form-control { background-color: #f8f9fa; border: 1px solid #ced4da; padding: 14px; border-radius: 8px; }
+    .form-control:focus { border-color: #3aa6a2; box-shadow: none; }
+    .btn-teal-custom { background-color: #3aa6a2; border: none; color: white; padding: 14px; font-weight: bold; transition: 0.3s; }
+    .btn-teal-custom:hover { background-color: #2f8c88; color: white; }
+    .url-preview { background-color: #f1f3f5; padding: 12px; border-radius: 6px; font-size: 0.85rem; color: #495057; border: 1px dashed #ced4da; }
+  </style>
+</head>
+<body>
+
+<div class="onboarding-card">
+  <div class="lms-logo"><i class="bi bi-building-gear"></i></div>
+  <span class="step-badge">Passo 3 de 3: Finalizar Configuração</span>
+  <h4 class="fw-bold mb-2">Nome do seu Escritório</h4>
+  <p class="text-muted small mb-4">Insira o nome oficial da sua firma jurídica ou empresa.</p>
+
+  <form method="post" th:action="@{/empresa/salvar}" class="text-start">
+    <div class="mb-4">
+      <label class="form-label fw-medium text-secondary">Nome da Empresa / Escritório</label>
+      <input type="text" id="nomeEmpresa" name="nomeEmpresa" class="form-control" placeholder="Ex: Advocacia Beus" required autocomplete="off">
+    </div>
+
+    <div class="mb-4">
+      <label class="form-label d-block fw-medium text-secondary">Seu link de acesso exclusivo será:</label>
+      <div class="url-preview">
+        <i class="bi bi-globe me-1 text-secondary"></i> lms.com.br/<span id="slugPreview" class="fw-bold text-dark">seu-escritorio</span>/login
+      </div>
+    </div>
+
+    <div class="d-grid gap-2">
+      <button type="submit" class="btn btn-teal-custom w-100 rounded-pill">Criar Meu Dashboard</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  document.getElementById('nomeEmpresa').addEventListener('input', function(e) {
+    let text = e.target.value;
+    let slug = text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
+    document.getElementById('slugPreview').innerText = slug || 'seu-escritorio';
+  });
+</script>
+</body>
+</html>

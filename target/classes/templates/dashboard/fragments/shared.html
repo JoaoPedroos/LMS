@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="head(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">LMS Jurídico</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --sidebar-width: 260px; --primary-teal: #3aa6a2; --dark-bg: #111827; --light-bg: #f3f4f6; }
+        body { background-color: var(--light-bg); font-family: 'Segoe UI', system-ui, sans-serif; overflow-x: hidden; }
+
+        .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; top: 0; left: 0; background-color: var(--dark-bg); color: #9ca3af; z-index: 1000; display: flex; flex-direction: column; }
+        .sidebar-brand { padding: 25px 20px; font-size: 1.4rem; font-weight: 800; color: #ffffff; display: flex; align-items: center; border-bottom: 1px solid #1f2937; }
+        .sidebar-brand i { color: var(--primary-teal); font-size: 1.8rem; margin-right: 12px; }
+
+        .sidebar-menu { list-style: none; padding: 20px 15px; margin: 0; flex-grow: 1; }
+        .sidebar-menu li { margin-bottom: 5px; }
+        .sidebar-menu li a { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; color: #d1d5db; text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; }
+        .sidebar-menu li a i { font-size: 1.2rem; margin-right: 12px; width: 24px; }
+        .sidebar-menu li a:hover { background-color: #1f2937; color: #ffffff; }
+        .sidebar-menu li.active a { background-color: rgba(58, 166, 162, 0.15); color: var(--primary-teal); font-weight: 600; }
+
+        .badge-counter { background-color: #374151; color: white; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; }
+
+        .main-content { margin-left: var(--sidebar-width); min-height: 100vh; display: flex; flex-direction: column; }
+        .navbar-top { background-color: #ffffff; padding: 15px 30px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; }
+        .search-bar { background-color: var(--light-bg); border: none; border-radius: 8px; padding: 10px 15px; width: 350px; outline: none; }
+
+        .content-card { background: #ffffff; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0,0,0,0.02); overflow: hidden; }
+        .content-card-header { padding: 20px 25px; border-bottom: 1px solid #f3f4f6; font-weight: 700; color: var(--dark-bg); display: flex; align-items: center; }
+        .content-card-body { padding: 25px; }
+    </style>
+</head>
+
+<body>
+<div th:fragment="sidebar" class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><i class="bi bi-scales"></i> LMS</div>
+    <ul class="sidebar-menu">
+        <li class="active"><a th:href="@{/{slug}/index(slug=${slugEmpresa})}">
+            <div><i class="bi bi-grid-1x2-fill"></i> Dashboard</div>
+        </a></li>
+
+        <li th:if="${session.usuarioLogado.tipoUsuario.nome == 'ADMIN' or #lists.contains(session.usuarioLogado.permissoes.![nome], 'VISUALIZAR_PROCESSOS')}">
+            <a th:href="@{/{slug}/processos(slug=${slugEmpresa})}">
+                <div><i class="bi bi-folder"></i> Processos</div>
+            </a></li>
+
+        <li th:if="${session.usuarioLogado.tipoUsuario.nome == 'ADMIN' or #lists.contains(session.usuarioLogado.permissoes.![nome], 'VISUALIZAR_CLIENTES') or #lists.contains(session.usuarioLogado.permissoes.![nome], 'GERENCIAR_CLIENTES')}">
+            <a th:href="@{/{slug}/clientes(slug=${slugEmpresa})}">
+                <div><i class="bi bi-people"></i> Clientes</div>
+            </a></li>
+
+        <li th:if="${session.usuarioLogado.tipoUsuario.nome == 'ADMIN' or #lists.contains(session.usuarioLogado.permissoes.![nome], 'VISUALIZAR_AGENDA')}">
+            <a th:href="@{/{slug}/agenda(slug=${slugEmpresa})}">
+                <div><i class="bi bi-calendar3"></i> Agenda Audiências</div>
+            </a></li>
+
+        <li th:if="${session.usuarioLogado.tipoUsuario.nome == 'ADMIN' or #lists.contains(session.usuarioLogado.permissoes.![nome], 'FINANCEIRO')}">
+            <a th:href="@{/{slug}/financeiro(slug=${slugEmpresa})}">
+                <div><i class="bi bi-cash-coin"></i> Financeiro</div>
+            </a>
+        </li>
+
+        <li><a th:href="@{/{slug}/demandas(slug=${slugEmpresa})}">
+            <div><i class="bi bi-list-check"></i> Demandas</div>
+        </a></li>
+
+        <li th:if="${session.usuarioLogado.tipoUsuario != null and session.usuarioLogado.tipoUsuario.nome == 'ADMIN'}">
+            <a th:href="@{/{slug}/funcionarios(slug=${slugEmpresa})}">
+                <div><i class="bi bi-people"></i> Funcionários</div>
+            </a>
+        </li>
+
+        <li th:if="${session.usuarioLogado.tipoUsuario.nome == 'ADMIN' or #lists.contains(session.usuarioLogado.permissoes.![nome], 'GERENCIAR_CONFIGURACOES')}">
+            <a th:href="@{/{slug}/configuracoes(slug=${slugEmpresa})}">
+                <div><i class="bi bi-gear"></i> Configurações</div>
+            </a>
+        </li>
+
+    </ul>
+    <div class="p-4 border-top text-center" style="border-color: #1f2937 !important;">
+        <div class="small fw-bold text-uppercase text-muted mb-1" th:text="${session.usuarioLogado.tipoUsuario.nome}">CARGO</div>
+        <div class="text-white text-truncate" th:text="${slugEmpresa}">escritorio</div>
+    </div>
+</div>
+
+<div th:fragment="header" class="navbar-top">
+    <div class="d-flex align-items-center">
+        <i class="bi bi-search text-muted position-absolute ms-3"></i>
+        <input type="text" class="search-bar ps-5" placeholder="Buscar no sistema...">
+    </div>
+    <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center">
+            <div class="bg-light rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                <i class="bi bi-person-fill text-secondary fs-5"></i>
+            </div>
+            <div class="lh-sm me-3">
+                <div class="fw-bold" style="color: var(--dark-bg);" th:text="${session.usuarioLogado.nome}">Nome</div>
+                <div class="small text-muted">Acesso Liberado <i class="bi bi-shield-check text-success ms-1"></i></div>
+            </div>
+            <a th:href="@{/{slug}/perfil(slug=${slugEmpresa})}" class="btn btn-outline-secondary btn-sm me-3">
+                <i class="bi bi-person-gear"></i> Meu Perfil
+            </a>
+            <a th:href="@{/{slug}/logout(slug=${slugEmpresa})}" class="text-muted text-decoration-none"><i class="bi bi-box-arrow-right"></i> Sair</a>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="scripts">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+</body>
+</html>

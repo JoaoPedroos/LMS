@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{dashboard/fragments/shared :: head('Meu Perfil - LMS Jurídico')}"></head>
+<body>
+
+<div th:replace="~{dashboard/fragments/shared :: sidebar}"></div>
+
+<div class="main-content" id="mainContent">
+    <div th:replace="~{dashboard/fragments/shared :: header}"></div>
+
+    <div class="container-fluid p-4">
+        <h3 class="fw-bold mb-4" style="color: #111827;">
+            <i class="bi bi-person-badge text-teal me-2" style="color: var(--primary-teal);"></i> Meu Perfil
+        </h3>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                        <h6 class="fw-bold text-dark mb-0">Configurações da Conta</h6>
+                        <p class="small text-muted mt-1">Atualize suas informações pessoais e credenciais de acesso.</p>
+                    </div>
+                    <div class="card-body p-4">
+
+                        <div th:if="${sucesso}" class="alert alert-success py-2 small fw-bold" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${sucesso}"></span>
+                        </div>
+
+                        <form th:action="@{/{slug}/perfil/salvar(slug=${slugEmpresa})}" method="post">
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold text-muted">Nome Completo</label>
+                                <input type="text" name="nome" class="form-control" th:value="${usuario.nome}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold text-muted">E-mail de Acesso</label>
+                                <input type="email" name="email" class="form-control" th:value="${usuario.email}" required>
+                            </div>
+
+                            <hr class="my-4">
+                            <h6 class="fw-bold text-dark mb-3">Segurança</h6>
+
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-muted">Nova Senha (deixe em branco para não alterar)</label>
+                                <input type="password" name="senha" class="form-control" placeholder="Digite apenas se quiser mudar a senha atual">
+                            </div>
+
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary px-4" style="background-color: var(--primary-teal); border: none;">
+                                    Salvar Alterações
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{dashboard/fragments/shared :: scripts}"></div>
+</body>
+</html>
